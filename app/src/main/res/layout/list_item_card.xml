@@ -1,0 +1,99 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/selectable_background"
+    android:padding="10dp" >
+
+    <TextView
+        android:id="@+id/post_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="Sell some books"
+        android:textColor="#313233"
+        android:textSize="16sp" />
+
+    <RelativeLayout
+        android:id="@+id/fragment_postbar_listview_relative"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/post_title" >
+
+        <ImageView
+            android:id="@+id/pic1"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/book1"/>
+
+        <ImageView
+            android:id="@+id/pic2"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/pic1"
+            android:src="@drawable/book2"/>
+
+        <ImageView
+            android:id="@+id/pic3"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/pic2"
+            android:src="@drawable/book3"/>
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/fragment_postbar_listview_relative_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_postbar_listview_relative"
+        android:layout_marginTop="8dp" >
+
+        <TextView
+            android:id="@+id/fragment_postbar_listview_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="author"
+            android:textColor="#7A7C80"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/fragment_postbar_listview_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/fragment_postbar_listview_author"
+            android:text="10:10"
+            android:textColor="#7A7C80"
+            android:textSize="12sp" />
+
+        <ImageView
+            android:id="@+id/fragment_postbar_listview_reply_Num_img"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:layout_toLeftOf="@+id/fragment_postbar_listview_reply_Num"
+            android:src="@drawable/icon_replay_times" />
+
+        <TextView
+            android:id="@+id/fragment_postbar_listview_reply_Num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:text="8"
+            android:textColor="#7A7C80"
+            android:textSize="12sp" />
+    </RelativeLayout>
+
+</RelativeLayout>
