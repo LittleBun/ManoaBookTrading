@@ -1,6 +1,5 @@
 package com.uhmanoa.booktrade.fragment;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +10,7 @@ import com.uhmanoa.booktrade.R;
 /**
  * Created by LiuYan on 2015/1/29.
  */
-public class AboutFragment extends Fragment {
+public class AboutFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

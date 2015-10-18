@@ -1,14 +1,14 @@
 package com.uhmanoa.booktrade.fragment;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.uhmanoa.booktrade.R;
@@ -17,32 +17,19 @@ import com.uhmanoa.booktrade.utils.ToastUtils;
 
 import java.util.ArrayList;
 
-import fr.castorflex.android.circularprogressbar.CircularProgressDrawable;
-
-public class PostsListFragment extends Fragment {
+public class PostsListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private ListView cardsList;
-    private View rootView;
-    private ProgressBar mProgressBar;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if (rootView == null) {
-            rootView = inflater.inflate(R.layout.fragment_posts_list, container, false);
-            cardsList = (ListView) rootView.findViewById(R.id.cards_list);
-            mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressbar_circular_posts);
-            mProgressBar.setIndeterminateDrawable(new CircularProgressDrawable
-                    .Builder(getActivity())
-                    .colors(getResources().getIntArray(R.array.gplus_colors))
-                    .sweepSpeed(1f)
-                    .strokeWidth(5)
-                    .style(CircularProgressDrawable.Style.ROUNDED)
-                    .build());
-            setupList();
-        }
-        ViewGroup parent = (ViewGroup) rootView.getParent();
-        if (parent != null) {
-            parent.removeView(rootView);
-        }
+        View rootView = inflater.inflate(R.layout.fragment_posts_list, container, false);
+        cardsList = (ListView) rootView.findViewById(R.id.cards_list);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.red, R.color.blue, R.color.yellow, R.color.green);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        setupList();
         return rootView;
     }
 
@@ -54,11 +41,26 @@ public class PostsListFragment extends Fragment {
     private CardsAdapter createAdapter() {
         ArrayList<String> items = new ArrayList<>();
 
-        for (int i = 0; i < 50; i++) {
-            items.add(i, "Sell some books " + i);
+        for (int i = 0; i < 30; i++) {
+            items.add(i, "Sell some used books " + i);
         }
 
         return new CardsAdapter(getActivity(), items, new ListItemClickListener());
+    }
+
+    @Override
+    public void onRefresh() {
+
+        // TODO Auto-generated method stub
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        }, 5000);
+
+
     }
 
     /*

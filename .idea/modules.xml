@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/BookTrading.iml" filepath="$PROJECT_DIR$/BookTrading.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ManoaBookTrading.iml" filepath="$PROJECT_DIR$/ManoaBookTrading.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/library-circular/library-circular.iml" filepath="$PROJECT_DIR$/library-circular/library-circular.iml" />
     </modules>

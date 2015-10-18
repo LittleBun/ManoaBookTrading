@@ -1,21 +1,18 @@
 package com.uhmanoa.booktrade.fragment;
 
-
-import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-
 import com.uhmanoa.booktrade.R;
 
 import fr.castorflex.android.circularprogressbar.CircularProgressDrawable;
 
-public class SettingFragment extends Fragment {
+
+public class SettingFragment extends BaseFragment {
 
     private ProgressBar mProgressBar;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
