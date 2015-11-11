@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">UHManoa BookTrading</string>
+    <string name="app_name">ManoaBookTrading</string>
     <string name="action_settings">Settings</string>
     <string name="action_send_post">Upload</string>
+    <string name="action_progress">Loading</string>
     <string name="hello_world">Hello world!</string>
     <string name="drawer_open">Slider Menu Opened</string>
     <string name="drawer_close">Slider Menu Closed</string>
@@ -12,10 +13,10 @@
     <string name="dialog_ok">OK</string>
     <string name="list_item_left_button">Left</string>
     <string name="list_item_right_button">Right</string>
-    <string name="one_more_back">One More Back to Exit</string>
+    <string name="one_more_back">Click one more back to exit</string>
     <string name="list_click">list: </string>
-    <string name="me">me</string>
-    <string name="new_post_hint">Please Enter book information</string>
+    <string name="please_login">click to login</string>
+    <string name="new_post_hint">Please enter book information</string>
     <!-- Content Description -->
     <string name="desc_list_item_icon">Item Icon</string>
     <string name="title_activity_splash">SplashActivity</string>
@@ -23,6 +24,26 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_base_home">Personal Page</string>
-    <string name="title_activity_new_post">New Post</string>
+    <string name="title_activity_new_post">Make Post</string>
+    <string name="title_activity_login">Login</string>
+    <string name="title_activity_register">Register</string>
+    <string name="empty_username">Enter user name</string>
+    <string name="empty_password">Enter password</string>
+    <string name="empty_email">Enter your email</string>
+    <string name="login_successfully">Login successfully</string>
+    <string name="login_failed">Login failed</string>
+    <string name="register_successfully">Register successfully</string>
+    <string name="register_failed">Register failed</string>
+    <string name="wrong_username_or_password">Username does not match password</string>
+    <string name="go_to_register">Register</string>
+    <string name="find_back_password">Find password</string>
+    <string name="back_to_login">Back to login</string>
+    <string name="title_activity_comment">Post</string>
 
+    <string name="about">
+        <p><b>BookTrade-UHManoa\n</b></p>
+        <p>Manoa Book Trading Android APP\n</p>
+        <p>\n</p>
+        <p>\n</p>
+        <p><u><b>https://littlebun.github.io</b></u></p></string>
 </resources>

@@ -1,12 +1,13 @@
 package com.uhmanoa.booktrade.activity;
 
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,14 +17,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.uhmanoa.booktrade.R;
 import com.uhmanoa.booktrade.entity.Post;
 import com.uhmanoa.booktrade.entity.User;
+import com.uhmanoa.booktrade.utils.BitmapUtils;
 import com.uhmanoa.booktrade.utils.LogUtils;
 import com.uhmanoa.booktrade.utils.ToastUtils;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,75 +38,67 @@ import cn.bmob.v3.listener.UploadFileListener;
 
 public class NewPostActivity extends BaseActivity implements View.OnClickListener {
 
+    private String TAG;
+
     private static final int REQUEST_CODE_ALBUM = 1;
     private static final int REQUEST_CODE_CAMERA = 2;
 
-    EditText content;
+    private boolean isSending = false;
+    private EditText content;
 
-    LinearLayout openLayout;
-    LinearLayout takeLayout;
+    private LinearLayout openLayout;
+    private LinearLayout takeLayout;
 
-    ImageView albumPic;
-    ImageView takePic;
-
-    String dateTime;
-    String targeturl = null;
-
-    ImageLoader imageLoader;
-    DisplayImageOptions options;
-
-    String mCurrentPhotoPath;
+    private ImageView pic1;
+    private ImageView pic2;
+    private ImageView pic3;
+    private String targetUrl;
+    private String mCurrentPhotoPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_post);
-        getActionBar().setTitle(R.string.title_activity_new_post);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-
+        TAG = getClass().getSimpleName();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            getActionBar().setTitle(R.string.title_activity_new_post);
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setHomeButtonEnabled(true);
+        }
         content = (EditText) findViewById(R.id.new_post_content);
         openLayout = (LinearLayout) findViewById(R.id.open_layout);
         takeLayout = (LinearLayout) findViewById(R.id.take_layout);
 
-        albumPic = (ImageView) findViewById(R.id.open_pic);
-        takePic = (ImageView) findViewById(R.id.take_pic);
-
+        pic1 = (ImageView) findViewById(R.id.pic1);
+        pic2 = (ImageView) findViewById(R.id.pic2);
+        pic3 = (ImageView) findViewById(R.id.pic3);
         openLayout.setOnClickListener(this);
         takeLayout.setOnClickListener(this);
 
-        imageLoader = ImageLoader.getInstance();
-        setImageLoaderOptions();
     }
 
-    private void setImageLoaderOptions() {
-        options = new DisplayImageOptions.Builder()
-                .showImageForEmptyUri(R.drawable.ic_launcher)//setting pic for empty or errors
-                .showImageForEmptyUri(R.drawable.ic_launcher)
-                .showImageOnFail(R.drawable.ic_launcher)  //setting pic for loading/unzip errors
-                .cacheInMemory(true)//setting if cache downloaded pics in memory
-                .cacheOnDisc(true)//setting if cache downloaded pics in SD card
-                .considerExifParams(true)
-                .imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
-                .bitmapConfig(Bitmap.Config.RGB_565)
-                .build();
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        LogUtils.d(TAG, "onBackPressed()");
         super.onBackPressed();
+        Intent intent = new Intent(NewPostActivity.this, MainActivity.class);
+        startActivity(intent);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.open_layout:
-                Date date1 = new Date(System.currentTimeMillis());
-                dateTime = date1.getTime() + "";
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setDataAndType(MediaStore.Images.Media.INTERNAL_CONTENT_URI, "image/*");
-                startActivityForResult(intent, REQUEST_CODE_ALBUM);
+                Intent intent = new Intent(Intent.ACTION_PICK);//or ACTION_PICK
+                intent.setType("image/*");//相片类型
+                startActivityForResult(Intent.createChooser(intent,
+                        "Select Picture"), REQUEST_CODE_ALBUM);
                 break;
             case R.id.take_layout:
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -116,7 +109,7 @@ public class NewPostActivity extends BaseActivity implements View.OnClickListene
                         photoFile = createImageFile();
                     } catch (IOException ex) {
                         // Error occurred while creating the File
-                        ToastUtils.showToast(mContext, "fail to create pictures！", Toast.LENGTH_SHORT);
+                        ToastUtils.showToast(mContext, "Create photo failed", Toast.LENGTH_SHORT);
                     }
                     // Continue only if the File was successfully created
                     if (photoFile != null) {
@@ -166,27 +159,26 @@ public class NewPostActivity extends BaseActivity implements View.OnClickListene
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_CODE_ALBUM:
-                    String fileName = null;
                     if (data != null) {
                         Uri originalUri = data.getData();
-                        ContentResolver cr = getContentResolver();
-                        Cursor cursor = cr.query(originalUri, null, null, null, null);
-                        if (cursor.moveToFirst()) {
-                            do {
-                                fileName = cursor.getString(cursor.getColumnIndex("_data"));
-                            } while (cursor.moveToNext());
-                        }
-                        LogUtils.d(TAG, fileName);
-                        targeturl = fileName;
-                        imageLoader.displayImage("file://" + fileName, albumPic);
-                        //takeLayout.setVisibility(View.GONE);
+                        targetUrl = BitmapUtils.saveToSdCard(this, BitmapUtils.compressBitmapFromFile(getPath(originalUri), 800, 480));
+                        LogUtils.d(TAG, targetUrl);
+                        Glide.with(this)
+                                .load(Uri.parse("file://" + targetUrl))
+                                .centerCrop()
+                                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                                .into(pic1);
                     }
                     break;
                 case REQUEST_CODE_CAMERA:
                     galleryAddPic();
                     LogUtils.d(TAG, mCurrentPhotoPath);
-                    targeturl = mCurrentPhotoPath;
-                    imageLoader.displayImage("file://" + mCurrentPhotoPath, takePic);
+                    targetUrl = BitmapUtils.saveToSdCard(this, BitmapUtils.compressBitmapFromFile(mCurrentPhotoPath, 800, 480));
+                    Glide.with(this)
+                            .load(Uri.parse("file://" + targetUrl))
+                            .centerCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                            .into(pic1);
                     break;
                 default:
                     break;
@@ -194,19 +186,42 @@ public class NewPostActivity extends BaseActivity implements View.OnClickListene
         }
     }
 
+    /**
+     * helper to retrieve the path of an image URI
+     */
+    public String getPath(Uri uri) {
+        // just some safety built in
+        if (uri == null) {
+            // TODO perform some logging or show user feedback
+            return null;
+        }
+        // try to retrieve the image from the media store first
+        // this will only work for images selected from gallery
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        if (cursor != null) {
+            int columnIndex = cursor
+                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(columnIndex);
+        }
+        // this is our fallback here
+        cursor.close();
+        return uri.getPath();
+    }
 
-     /*
-         * 发表带图片
-         */
+    /*
+        * 发表带图片
+        */
     private void publish(final String commitContent) {
 
-        final BmobFile figureFile = new BmobFile(new File(targeturl));
+        final BmobFile figureFile = new BmobFile(new File(targetUrl));
         figureFile.upload(mContext, new UploadFileListener() {
 
             @Override
             public void onSuccess() {
                 // TODO Auto-generated method stub
-                LogUtils.i(TAG, "Upload Successfully!" + figureFile.getFileUrl(mContext));
+                LogUtils.i(TAG, "Upload file successfully" + figureFile.getFileUrl(mContext));
                 publishWithoutFigure(commitContent, figureFile);
 
             }
@@ -220,7 +235,7 @@ public class NewPostActivity extends BaseActivity implements View.OnClickListene
             @Override
             public void onFailure(int arg0, String arg1) {
                 // TODO Auto-generated method stub
-                LogUtils.i(TAG, "Fail to upload!" + arg1);
+                LogUtils.i(TAG, "Upload file failed" + arg1);
             }
         });
 
@@ -245,19 +260,35 @@ public class NewPostActivity extends BaseActivity implements View.OnClickListene
         post.save(mContext, new SaveListener() {
 
             @Override
+            public void onStart() {
+                LogUtils.i(TAG, "start sending");
+                super.onStart();
+            }
+
+            @Override
             public void onSuccess() {
                 // TODO Auto-generated method stub
-                ToastUtils.showToast(mContext, "Post Successfully!", Toast.LENGTH_SHORT);
-                LogUtils.i(TAG, "Create Successfully");
+                LogUtils.i(TAG, "Create successfully");
+                ToastUtils.showToast(mContext, "Post successfully", Toast.LENGTH_SHORT);
                 setResult(RESULT_OK);
+                isSending = false;
+                invalidateOptionsMenu();
                 onBackPressed();
+
+            }
+
+            @Override
+            public void onFinish() {
+                super.onFinish();
             }
 
             @Override
             public void onFailure(int arg0, String arg1) {
                 // TODO Auto-generated method stub
-                ToastUtils.showToast(mContext, "Fail to Post!" + arg1, Toast.LENGTH_SHORT);
-                LogUtils.i(TAG, "Fail to Create!" + arg1);
+                isSending = false;
+                invalidateOptionsMenu();
+                ToastUtils.showToast(mContext, "Post failed!" + arg1, Toast.LENGTH_SHORT);
+                LogUtils.i(TAG, "Create failed" + arg1);
             }
         });
     }
@@ -265,7 +296,12 @@ public class NewPostActivity extends BaseActivity implements View.OnClickListene
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_new_post, menu);
+        if (!isSending) {
+            getMenuInflater().inflate(R.menu.menu_new_post, menu);
+        } else {
+            getMenuInflater().inflate(R.menu.menu_progress, menu);
+        }
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -277,20 +313,53 @@ public class NewPostActivity extends BaseActivity implements View.OnClickListene
         int id = item.getItemId();
         switch (id) {
             case R.id.action_send_post:
-                String commitContent = content.getText().toString().trim();
+                final String commitContent = content.getText().toString().trim();
                 if (commitContent.isEmpty()) {
-                    ToastUtils.showToast(mContext, "Content can't be empty", Toast.LENGTH_SHORT);
+                    ToastUtils.showToast(mContext, "Invalid content", Toast.LENGTH_SHORT);
                     return true;
                 }
-                if (targeturl == null) {
-                    publishWithoutFigure(commitContent, null);
-                } else {
-                    publish(commitContent);
-                }
-                ToastUtils.showToast(mContext, "Posting...", Toast.LENGTH_SHORT);
+                isSending = true;
+                invalidateOptionsMenu();
+                new SendPostTask().execute(commitContent);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        isSending = false;
+                        invalidateOptionsMenu();
+                    }
+                }, 15000);
                 return true;
-            default:
-                return super.onOptionsItemSelected(item);
+
+            case R.id.home:
+                onBackPressed();
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private class SendPostTask extends AsyncTask<String, Integer, Integer> {
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            if (targetUrl == null) {
+                publishWithoutFigure(params[0], null);
+            } else {
+                publish(params[0]);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            super.onPostExecute(integer);
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            isSending = false;
+            invalidateOptionsMenu();
         }
     }
 }

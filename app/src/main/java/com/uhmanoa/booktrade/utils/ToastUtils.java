@@ -8,12 +8,12 @@ public class ToastUtils{
 	
 	private static Toast mToast;
 
-	public static void showToast(Context context, int msg, int duration) {
+	public static void showToast(Context context, int resId, int duration) {
 	
 		if (mToast == null) {
-			mToast = Toast.makeText(context, msg, duration);
+			mToast = Toast.makeText(context, resId, duration);
 		} else {
-			mToast.setText(msg);
+			mToast.setText(resId);
 		}
 		mToast.show();
 	}
@@ -27,7 +27,9 @@ public class ToastUtils{
         mToast.show();
     }
 	public static void clearToast(){
-		mToast.cancel();
+        if (!(mToast == null)) {
+            mToast.cancel();
+        }
 	}
 }
 

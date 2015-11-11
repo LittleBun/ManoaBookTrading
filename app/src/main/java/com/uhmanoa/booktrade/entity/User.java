@@ -1,5 +1,7 @@
 package com.uhmanoa.booktrade.entity;
 
+import com.uhmanoa.booktrade.utils.Constant;
+
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.datatype.BmobRelation;
@@ -12,7 +14,7 @@ public class User extends BmobUser {
     private String signature;
     private BmobFile avatar;
     private BmobRelation favorite;
-    private String sex;
+    private String sex = Constant.SEX_MALE;
 
     public String getSex() {
         return sex;
@@ -44,5 +46,11 @@ public class User extends BmobUser {
 
     public void setSignature(String signature) {
         this.signature = signature;
+    }
+
+    @Override
+    public String toString() {
+        return "User [sex=" + getSex() + ", avatar=" + getAvatar()
+                + ", favorite=" + getFavorite() + "]";
     }
 }

@@ -16,6 +16,16 @@
         android:inputType="textMultiLine"
         android:minLines="6"
         android:padding="4dp"/>
+
+    <include
+        android:id="@+id/pics_post"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/new_post_content"
+        android:layout_margin="8dp"
+        android:layout_alignParentLeft="true"
+        layout="@layout/pics_thumbnails_layout"/>
+
     <RelativeLayout
         android:id="@+id/pic_content"
         android:layout_width="match_parent"
@@ -51,7 +61,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:scaleType="centerInside"
-                android:background="@drawable/open_picture"
+                android:src="@drawable/open_picture"
                 />
             <TextView
                 android:id="@+id/open_pic_tips"
@@ -60,7 +70,7 @@
                 android:textSize="16sp"
                 android:textColor="@color/gray"
                 android:textStyle="normal"
-                android:text="Select"
+                android:text="Add pictures"
                 android:gravity="center"
                 android:layout_marginLeft="8dip"
                 />
@@ -83,8 +93,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:scaleType="centerInside"
-                android:background="@drawable/take_picture"
-
+                android:src="@drawable/take_picture"
                 />
             <TextView
                 android:id="@+id/take_pic_tips"
@@ -93,7 +102,7 @@
                 android:textSize="16sp"
                 android:textColor="@color/gray"
                 android:textStyle="normal"
-                android:text="Take"
+                android:text="Take Photo"
                 android:gravity="center"
                 android:layout_marginLeft="8dip"
                 />

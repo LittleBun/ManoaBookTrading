@@ -20,7 +20,7 @@
         android:id="@+id/personal_home_user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Demievil"
+        android:text="LittleBun"
         android:layout_toRightOf="@id/personal_home_avatar"
         android:layout_alignTop="@id/personal_home_avatar"
         android:layout_margin="4dp"
@@ -32,7 +32,7 @@
         android:layout_toRightOf="@id/personal_home_avatar"
         android:layout_below="@id/personal_home_user_name"
         android:layout_margin="4dp"
-        android:text="Love Reading"
+        android:text="Reading"
         android:textSize="@dimen/text_size_small"
         />
     </RelativeLayout>

@@ -18,8 +18,8 @@ public class Post extends BmobObject implements Serializable{
 	private int share;
 	private int comment;
 	private boolean isPass;
-	private boolean myFav; //save
-	private boolean myLove;//like
+	private boolean myFav;//收藏
+	private boolean myLove;//赞
 	private BmobRelation relation;
 
 	public BmobRelation getRelation() {
@@ -51,9 +51,6 @@ public class Post extends BmobObject implements Serializable{
 	}
 	public void setLove(int love) {
 		this.love = love;
-	}
-	public int getHate() {
-		return hate;
 	}
 	public void setHate(int hate) {
 		this.hate = hate;
@@ -96,5 +93,4 @@ public class Post extends BmobObject implements Serializable{
 				+ comment + ", isPass=" + isPass + ", myFav=" + myFav
 				+ ", myLove=" + myLove + ", relation=" + relation + "]";
 	}
-	
 }

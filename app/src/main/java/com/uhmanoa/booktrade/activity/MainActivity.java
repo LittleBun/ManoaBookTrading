@@ -1,10 +1,31 @@
+
+/*
+ * Copyright (C) 2015 Liu Yan
+ * Email:liuyanbupt@163.com
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+
 package com.uhmanoa.booktrade.activity;
 
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -13,31 +34,43 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.uhmanoa.booktrade.MyApplication;
 import com.uhmanoa.booktrade.R;
 import com.uhmanoa.booktrade.adapter.NavDrawerListAdapter;
+import com.uhmanoa.booktrade.entity.User;
 import com.uhmanoa.booktrade.fragment.AboutFragment;
 import com.uhmanoa.booktrade.fragment.MessageFragment;
 import com.uhmanoa.booktrade.fragment.PostsListFragment;
 import com.uhmanoa.booktrade.fragment.SettingFragment;
 import com.uhmanoa.booktrade.fragment.model.NavDrawerItem;
+import com.uhmanoa.booktrade.utils.Constant;
 import com.uhmanoa.booktrade.utils.LogUtils;
 import com.uhmanoa.booktrade.utils.ToastUtils;
 
 import java.util.ArrayList;
 
+import cn.bmob.v3.BmobUser;
+
 
 public class MainActivity extends BaseActivity {
+
+    private String TAG;
     private DrawerLayout mDrawerLayout;
     private LinearLayout mDrawerLinear;
     private LinearLayout mDrawerUserHeader;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
 
+    private ImageView drawerUserAvatar;
+    private TextView drawerUsername;
     // nav drawer title
     private CharSequence mTitle;
 
@@ -47,54 +80,66 @@ public class MainActivity extends BaseActivity {
     // slide menu items
     private String[] navMenuTitles;
 
-    private static final int PERSONAL_HOME_LIST_FRAGMENT = -1;
+    private static final int TIME_INTERVAL = 2000;
+    private long mBackPressed;
+
     private static final int POSTS_LIST_FRAGMENT = 0;
     private static final int NEW_POST_FRAGMENT = 1;
     private static final int MESSAGE_FRAGMENT = 2;
     private static final int SETTING_FRAGMENT = 3;
     private static final int ABOUT_FRAGMENT = 4;
 
-    private int drawerPosition = POSTS_LIST_FRAGMENT;//default home page
-
-    private boolean doubleBackToExitPressedOnce = false;
+    private static final int REQUEST_LOGIN = 0;
+    private int drawerPosition = POSTS_LIST_FRAGMENT;//默认显示首页
 
     private Fragment fragment = null;
-    private PostsListFragment postsListFragment = new PostsListFragment();
-    private MessageFragment messageFragment = new MessageFragment();
-    private SettingFragment settingFragment = new SettingFragment();
-    private AboutFragment aboutFragment = new AboutFragment();
+    private PostsListFragment postsListFragment;
+    private MessageFragment messageFragment;
+    private SettingFragment settingFragment;
+    private AboutFragment aboutFragment;
+    private FragmentTransaction transaction;
+
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        TAG = getClass().getSimpleName();
         LogUtils.i(TAG, "onCreate");
-        mTitle = mDrawerTitle = getTitle();
+        user = MyApplication.getMyApplication().getCurrentUser();
 
+        initViews();
+        setListeners();
+
+        postsListFragment = new PostsListFragment();
+        messageFragment = new MessageFragment();
+        settingFragment = new SettingFragment();
+        aboutFragment = new AboutFragment();
+
+        if (savedInstanceState == null) {
+            // on first time display view for first nav item
+            displayView(POSTS_LIST_FRAGMENT);
+        }
+    }
+
+
+    private void initViews() {
+        mTitle = mDrawerTitle = getTitle();
+        // enabling action bar app icon and behaving it as toggle button
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setHomeButtonEnabled(true);
+        }
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerLinear = (LinearLayout) findViewById(R.id.drawer_linear_layout);
         mDrawerUserHeader = (LinearLayout) findViewById(R.id.drawer_user_header);
         mDrawerList = (ListView) findViewById(R.id.drawer_list_item);
 
-        initNavDrawerItems();
+        drawerUserAvatar = (ImageView) findViewById(R.id.drawer_user_avatar);
+        drawerUsername = (TextView) findViewById(R.id.drawer_user_name);
+        updateUserHeader();
 
-        mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
-
-        mDrawerUserHeader.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //drawerPosition = PERSONAL_HOME_LIST_FRAGMENT;
-                //displayView(drawerPosition);
-                Intent intent = new Intent(MainActivity.this, PersonalHomeActivity.class);
-                startActivity(intent);
-                mDrawerLayout.closeDrawer(mDrawerLinear);
-            }
-        });
-
-        // enabling action bar app icon and behaving it as toggle button
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setHomeButtonEnabled(true);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.drawable.ic_drawer, //nav menu toggle icon
                 R.string.app_name, // nav drawer open - description for accessibility
@@ -112,14 +157,41 @@ public class MainActivity extends BaseActivity {
                 invalidateOptionsMenu();
             }
         };
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        if (savedInstanceState == null) {
-            // on first time display view for first nav item
-            displayView(drawerPosition);
+        initNavDrawerItems();
+    }
+
+    private void updateUserHeader() {
+        user = MyApplication.getMyApplication().getCurrentUser();
+        if (user != null) {
+            int defaultAvatar = user.getSex().equals(Constant.SEX_MALE) ? R.drawable.avatar_default_m : R.drawable.avatar_default_f;
+            drawerUserAvatar.setImageResource(defaultAvatar);
+            if (user.getAvatar() != null) {
+                String avatarUrl = user.getAvatar().getFileUrl(this);
+                LogUtils.i(TAG, "avatarUrl" + ":" + avatarUrl);
+                Glide.clear(drawerUserAvatar);
+                Glide.with(this)
+                        .load(Uri.parse(avatarUrl))
+                        .centerCrop()
+                        .placeholder(defaultAvatar)
+                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                        .into(drawerUserAvatar);
+            }
+            if (user.getUsername() != null) {
+                drawerUsername.setText(user.getUsername());
+            }
+        } else {
+            setLogoutUserInfo();
         }
     }
 
+    private void setLogoutUserInfo() {
+        if (user != null && user.getSex() != null) {
+            int defaultAvatar = user.getSex().equals(Constant.SEX_MALE) ? R.drawable.avatar_default_m : R.drawable.avatar_default_f;
+            drawerUserAvatar.setImageResource(defaultAvatar);
+        }
+        drawerUsername.setText("Click to login");
+    }
 
     private void initNavDrawerItems() {
         // load slide menu items
@@ -149,40 +221,85 @@ public class MainActivity extends BaseActivity {
         mDrawerList.setAdapter(adapter);
     }
 
+    private void setListeners() {
+        mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
+        mDrawerUserHeader.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mDrawerLayout.isDrawerOpen(mDrawerLinear)) {
+                    mDrawerLayout.closeDrawer(mDrawerLinear);
+                }
+                if (!isLogin()) {
+                    ToastUtils.showToast(MainActivity.this, "Please Login first", Toast.LENGTH_SHORT);
+                    Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+                    startActivityForResult(loginIntent, REQUEST_LOGIN);
+                } else {
+                    drawerPosition = SETTING_FRAGMENT;
+                    displayView(drawerPosition);
+                }
+            }
+        });
+
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+    }
 
     @Override
     protected void onResume() {
+        LogUtils.d(TAG, "onResume()" + drawerPosition);
         super.onResume();
-        doubleBackToExitPressedOnce = false;
+        mBackPressed = 0L;
+        drawerPosition = POSTS_LIST_FRAGMENT;
         displayView(drawerPosition);
     }
 
     /**
-     * Double click to Exit
+     * 双击back键退出
      */
     @Override
     public void onBackPressed() {
-
         if (mDrawerLayout.isDrawerOpen(mDrawerLinear)) {
             mDrawerLayout.closeDrawer(mDrawerLinear);
+        }
+        if (drawerPosition != POSTS_LIST_FRAGMENT) {
+            drawerPosition = POSTS_LIST_FRAGMENT;
+            displayView(drawerPosition);
         } else {
-            if (doubleBackToExitPressedOnce) {
+            if (System.currentTimeMillis() - mBackPressed <= TIME_INTERVAL) {
                 ToastUtils.clearToast();
                 MyApplication.getMyApplication().exit();
-                finish();
-                super.onBackPressed();
+                //finish();
                 return;
-
+            } else {
+                ToastUtils.showToast(this, R.string.one_more_back, Toast.LENGTH_SHORT);
+                mBackPressed = System.currentTimeMillis();
             }
-            this.doubleBackToExitPressedOnce = true;
-            ToastUtils.showToast(this, R.string.one_more_back, Toast.LENGTH_SHORT);
+        }
+    }
 
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    doubleBackToExitPressedOnce = false;
-                }
-            }, 2000);
+    /**
+     * 判断用户是否登录
+     *
+     * @return
+     */
+    private boolean isLogin() {
+        BmobUser user = BmobUser.getCurrentUser(mContext, User.class);
+        if (user != null) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_LOGIN:
+                    updateUserHeader();
+                    drawerPosition = POSTS_LIST_FRAGMENT;
+                    displayView(drawerPosition);
+                    break;
+            }
         }
     }
 
@@ -199,12 +316,12 @@ public class MainActivity extends BaseActivity {
             return true;
         }
         // Handle action bar actions click
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+        //  switch (item.getItemId()) {
+        //    case R.id.action_settings:
+        //       return true;
+        //  default:
+        return super.onOptionsItemSelected(item);
+        //}
     }
 
     /* *
@@ -214,7 +331,7 @@ public class MainActivity extends BaseActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         // if nav drawer is opened, hide the action items
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerLinear);
-        //menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
+        menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -229,15 +346,35 @@ public class MainActivity extends BaseActivity {
                 fragment = postsListFragment;
                 break;
             case NEW_POST_FRAGMENT:
-                Intent intent = new Intent(MainActivity.this, NewPostActivity.class);
-                startActivity(intent);
-                mDrawerLayout.closeDrawer(mDrawerLinear);
-                break;
+                drawerPosition = POSTS_LIST_FRAGMENT;
+                if (mDrawerLayout.isDrawerOpen(mDrawerLinear)) {
+                    mDrawerLayout.closeDrawer(mDrawerLinear);
+                }
+                if (!isLogin()) {
+                    Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+                    startActivityForResult(loginIntent, REQUEST_LOGIN);
+                    return;
+                } else {
+                    Intent intent = new Intent(MainActivity.this, NewPostActivity.class);
+                    startActivity(intent);
+                    return;
+                }
             case MESSAGE_FRAGMENT:
                 fragment = messageFragment;
                 break;
             case SETTING_FRAGMENT:
-                fragment = settingFragment;
+                if (!isLogin()) {
+                    drawerPosition = POSTS_LIST_FRAGMENT;
+                    if (mDrawerLayout.isDrawerOpen(mDrawerLinear)) {
+                        mDrawerLayout.closeDrawer(mDrawerLinear);
+                    }
+                    Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+                    startActivityForResult(loginIntent, REQUEST_LOGIN);
+                    return;
+                } else {
+                    drawerPosition = SETTING_FRAGMENT;
+                    fragment = settingFragment;
+                }
                 break;
             case ABOUT_FRAGMENT:
                 fragment = aboutFragment;
@@ -247,21 +384,24 @@ public class MainActivity extends BaseActivity {
         }
 
         if (fragment != null) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.frame_container_main, fragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
-
-            // update selected item and title, then close the drawer
-            mDrawerList.setItemChecked(position, true);
-            mDrawerList.setSelection(position);
-            setTitle(navMenuTitles[position]);
-
-            mDrawerLayout.closeDrawer(mDrawerLinear);
+            if (fragment.isAdded()) {
+                transaction = getSupportFragmentManager().beginTransaction();
+                transaction.addToBackStack(null);
+                transaction.show(fragment).commitAllowingStateLoss();
+            } else {
+                transaction = getSupportFragmentManager().beginTransaction();
+                transaction.addToBackStack(null);
+                transaction.replace(R.id.frame_container_main, fragment).commitAllowingStateLoss();
+            }
         } else {
             // error in creating fragment
             LogUtils.e("MainActivity", "Error in creating fragment");
         }
+        // update selected item and title, then close the drawer
+        mDrawerList.setItemChecked(position, true);
+        mDrawerList.setSelection(position);
+        setTitle(navMenuTitles[position]);
+        mDrawerLayout.closeDrawer(mDrawerLinear);
     }
 
     @Override
@@ -297,8 +437,8 @@ public class MainActivity extends BaseActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position,
                                 long id) {
             // display view for selected nav drawer item
-            displayView(position);
             drawerPosition = position;
+            displayView(position);
         }
     }
 
