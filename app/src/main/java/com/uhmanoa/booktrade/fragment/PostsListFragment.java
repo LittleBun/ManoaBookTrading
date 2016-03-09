@@ -92,23 +92,23 @@ public class PostsListFragment extends BaseFragment {
             postsLoading = (TextView) rootView.findViewById(R.id.posts_loading);
 
             postsList = (ZrcListView) rootView.findViewById(R.id.cards_list);
-            // 设置下拉刷新的样式（可选，但如果没有Header则无法下拉刷新）
+            // 
             SimpleHeader header = new SimpleHeader(mContext);
             header.setTextColor(0xff0066aa);
             header.setCircleColor(0xff33bbee);
             postsList.setHeadable(header);
 
-            // 设置加载更多的样式（可选）
+            // 
             SimpleFooter footer = new SimpleFooter(mContext);
             footer.setCircleColor(0xff33bbee);
             postsList.setFootable(footer);
-            //postsList.startLoadMore(); // 开启LoadingMore功能
+            //postsList.startLoadMore(); // 
 
-//            // 设置列表项出现动画（可选）
+//            // 
 //            postsList.setItemAnimForTopIn(R.anim.topitem_in);
 //            postsList.setItemAnimForBottomIn(R.anim.bottomitem_in);
 
-            // 下拉刷新事件回调（可选）
+            // 
             postsList.setOnRefreshStartListener(new ZrcListView.OnStartListener() {
                 @Override
                 public void onStart() {
@@ -117,7 +117,7 @@ public class PostsListFragment extends BaseFragment {
                 }
             });
 
-            // 加载更多事件回调（可选）
+            // 
             postsList.setOnLoadMoreStartListener(new ZrcListView.OnStartListener() {
                 @Override
                 public void onStart() {
@@ -172,7 +172,7 @@ public class PostsListFragment extends BaseFragment {
         query.order("-createdAt");
         query.setCachePolicy(BmobQuery.CachePolicy.CACHE_ELSE_NETWORK);
         query.include("author");
-        //获取15条数据
+        //
         query.setLimit(Constant.NUMBERS_PER_PAGE);
         switch (mRefreshType) {
             case REFRESH:
@@ -190,7 +190,7 @@ public class PostsListFragment extends BaseFragment {
                         //LogUtils.i(TAG, "time:" + getCurrentTime());
                         LogUtils.i(TAG, "find success list.size:" + list.size());
                         postsLoading.setVisibility(View.GONE);
-                        //有新帖子
+                        //
                         if (list.size() != 0 && list.get(list.size() - 1) != null) {
                             fetchResult = true;
                             if (MyApplication.getMyApplication().getCurrentUser() != null) {
@@ -219,7 +219,7 @@ public class PostsListFragment extends BaseFragment {
                 break;
 
             case LOAD_MORE:
-                //加载更多
+                //
                 query.setSkip(mListItems.size());
 
                 //query.addWhereLessThan("createdAt", lastPostTime);
@@ -231,7 +231,7 @@ public class PostsListFragment extends BaseFragment {
                         // TODO Auto-generated method stub
                         //LogUtils.i(TAG, "time:" + getCurrentTime());
                         LogUtils.i(TAG, "find success list.size:" + list.size());
-                        //有新帖子
+                        //
                         if (list.size() != 0 && list.get(list.size() - 1) != null) {
                             fetchResult = true;
                             if (MyApplication.getMyApplication().getCurrentUser() != null) {
@@ -248,8 +248,8 @@ public class PostsListFragment extends BaseFragment {
                                 @Override
                                 public void run() {
                                     postsList.stopLoadMore();
-                                    //ToastUtils.showToast(mContext, "已加载到最底部", Toast.LENGTH_SHORT);
-                                    postsList.startLoadMore(); // 开启LoadingMore功能
+                                    //ToastUtils.showToast(mContext, "Already Latest", Toast.LENGTH_SHORT);
+                                    postsList.startLoadMore(); // 
                                 }
                             }, 1500);
 
@@ -288,11 +288,11 @@ public class PostsListFragment extends BaseFragment {
             if (fetchResult && result) {
                 LogUtils.i(TAG, "FetchDataTask:fetchResult" + fetchResult);
                 mAdapter.notifyDataSetChanged();
-                postsList.setRefreshSuccess("Loading Successfully"); // 通知加载成功
+                postsList.setRefreshSuccess("Loading Successfully"); // 
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        postsList.startLoadMore(); // 开启LoadingMore功能
+                        postsList.startLoadMore(); // 
                     }
                 }, 2000);
             } else {
@@ -308,7 +308,7 @@ public class PostsListFragment extends BaseFragment {
     }
 
     /**
-     * 判断用户是否登录
+     * 
      *
      * @return
      */
