@@ -20,11 +20,11 @@ public class BitmapUtils {
     private static final String TAG = "BitmapUtils";
 
     /**
-     * 根据目标图片大小计算采样率
+     * 
      * @param options   BitmapFactory.Options
-     * @param reqHeight 目标图片高度
-     * @param reqWidth  目标图片宽度
-     * @return  采样率
+     * @param reqHeight 
+     * @param reqWidth  
+     * @return  
      */
     private static int getSampleSize(BitmapFactory.Options options, int reqHeight, int reqWidth) {
         int height = options.outHeight;
@@ -39,9 +39,9 @@ public class BitmapUtils {
     }
 
     /**
-     * 从文件压缩图片
-     * @param srcPath   图片路径
-     * @return  压缩后图片
+     * 
+     * @param srcPath   
+     * @return  
      */
     public static Bitmap compressBitmapFromFile(String srcPath, int reqHeight, int reqWidth) {
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -51,9 +51,9 @@ public class BitmapUtils {
 
         options.inJustDecodeBounds = false;
         options.inSampleSize = sampleSize;
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;//该模式是默认的,可不设
-        options.inPurgeable = true;// 同时设置才会有效
-        options.inInputShareable = true;//当系统内存不够时候图片自动被回收
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;//
+        options.inPurgeable = true;// 
+        options.inInputShareable = true;//
         bitmap = BitmapFactory.decodeFile(srcPath, options);
         return bitmap;
     }
