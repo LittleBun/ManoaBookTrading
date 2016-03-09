@@ -145,7 +145,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     }
 
     /**
-     * 判断用户是否登录
+     * 
      *
      * @return
      */
@@ -192,7 +192,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
             case R.id.setting_user_avatar_layout:
                 if (isLogin()) {
                     Intent intent = new Intent(Intent.ACTION_PICK);//or ACTION_PICK
-                    intent.setType("image/*");//相片类型
+                    intent.setType("image/*");//
                     startActivityForResult(Intent.createChooser(intent,
                             "Select Picture"), REQUEST_CODE_ALBUM);
                 } else {
