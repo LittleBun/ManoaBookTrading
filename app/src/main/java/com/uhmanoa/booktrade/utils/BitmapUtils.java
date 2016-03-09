@@ -45,7 +45,7 @@ public class BitmapUtils {
      */
     public static Bitmap compressBitmapFromFile(String srcPath, int reqHeight, int reqWidth) {
         BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;//只读边,不读内容
+        options.inJustDecodeBounds = true;//
         BitmapFactory.decodeFile(srcPath, options);
         int sampleSize = getSampleSize(options, reqHeight, reqWidth);
 
