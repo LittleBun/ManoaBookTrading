@@ -64,7 +64,7 @@ public class UserProxy {
 	public User getCurrentUser(){
 		User user = BmobUser.getCurrentUser(mContext, User.class);
 		if(user != null){
-//			LogUtils.i(TAG,"本地用户信息" + user.getObjectId() + "-"
+//			LogUtils.i(TAG,"Local User Info" + user.getObjectId() + "-"
 //					+ user.getUsername() + "-"
 //					+ user.getSessionToken() + "-"
 //					+ user.getCreatedAt() + "-"
@@ -73,7 +73,7 @@ public class UserProxy {
 //					+ user.getSex());
 			return user;
 		}else{
-			LogUtils.i(TAG,"本地用户为null,请登录。");
+			LogUtils.i(TAG,"Local User Empty, please login.");
 		}
 		return null;
 	}
