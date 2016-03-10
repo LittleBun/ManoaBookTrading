@@ -31,7 +31,7 @@ public class DatabaseUtil {
     }
 
     /**
-     * 初始化
+     * 
      *
      * @param context
      */
@@ -40,7 +40,7 @@ public class DatabaseUtil {
     }
 
     /**
-     * 销毁
+     * 
      */
     public static void destory() {
         if (instance != null) {
@@ -49,7 +49,7 @@ public class DatabaseUtil {
     }
 
     /**
-     * 销毁
+     * 
      */
     public void onDestory() {
         instance = null;
@@ -134,7 +134,7 @@ public class DatabaseUtil {
 
 
     /**
-     * 设置内容的收藏状态
+     * 
      *
      * @param lists
      */
@@ -170,7 +170,7 @@ public class DatabaseUtil {
     }
 
     /**
-     * 设置内容的收藏状态
+     * 
      *
      * @param lists
      */
