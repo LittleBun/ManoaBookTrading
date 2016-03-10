@@ -176,7 +176,7 @@ public class CommentActivity extends BaseActivity implements View.OnClickListene
         if (mood2 == null) {
             return;
         }
-        //头像
+        //
         User user = post.getAuthor();
         BmobFile avatar = user.getAvatar();
         if (null != avatar) {
@@ -191,13 +191,13 @@ public class CommentActivity extends BaseActivity implements View.OnClickListene
                     .diskCacheStrategy(DiskCacheStrategy.RESULT)
                     .into(userAvatar);
         }
-        //用户名
+        //
         userName.setText(post.getAuthor().getUsername());
-        //标题
+        //
         postTitle.setText(post.getContent());
-        //时间戳
+        //
         timeStamp.setText(post.getCreatedAt());
-        //图片
+        //
         if (null == post.getContentfigureurl()) {
             postPics.setVisibility(View.GONE);
         } else {
@@ -212,7 +212,7 @@ public class CommentActivity extends BaseActivity implements View.OnClickListene
                     .into(pic1);
         }
 
-        //点赞
+        //
         likeCount.setText(post.getLove() + "");
         if (post.getMyLove()) {
             thumb.setImageResource(R.drawable.ic_post_my_like);
@@ -222,20 +222,20 @@ public class CommentActivity extends BaseActivity implements View.OnClickListene
             likeCount.setTextColor(R.color.button_material_dark);
         }
 
-        //收藏图标
+        //
         if (post.getMyFav()) {
             favorite.setImageResource(R.drawable.ic_favorite);
         } else {
             favorite.setImageResource(R.drawable.ic_favorite_outline);
         }
 
-        //加载评论数量
+        //
         commentCount.setText(post.getComment() + "");
 
     }
 
     /**
-     * 判断用户是否登录
+     * 
      *
      * @return
      */
@@ -281,12 +281,12 @@ public class CommentActivity extends BaseActivity implements View.OnClickListene
 
     private void onClickUserLogo() {
         // TODO Auto-generated method stub
-        //跳转到个人信息界面
-        if (isLogin()) {//已登录
+        //
+        if (isLogin()) {//
             Intent intent = new Intent();
             intent.setClass(MyApplication.getMyApplication().getTopActivity(), PersonalHomeActivity.class);
             mContext.startActivity(intent);
-        } else {//未登录
+        } else {//
             ToastUtils.showToast(CommentActivity.this, "Please Login First", Toast.LENGTH_SHORT);
             Intent intent = new Intent();
             intent.setClass(this, LoginActivity.class);
@@ -301,7 +301,7 @@ public class CommentActivity extends BaseActivity implements View.OnClickListene
 
     private void onClickCommit() {
         // TODO Auto-generated method stub
-        if (isLogin()) {//已登录
+        if (isLogin()) {//
             commentEdit = commentContent.getText().toString().trim();
             if (TextUtils.isEmpty(commentEdit)) {
                 ToastUtils.showToast(CommentActivity.this, "Invalid comment", Toast.LENGTH_SHORT);
@@ -310,7 +310,7 @@ public class CommentActivity extends BaseActivity implements View.OnClickListene
             //comment now
             User currentUser = BmobUser.getCurrentUser(this, User.class);
             publishComment(currentUser, commentEdit);
-        } else {//未登录
+        } else {//
             ToastUtils.showToast(CommentActivity.this, "Login first", Toast.LENGTH_SHORT);
             Intent intent = new Intent();
             intent.setClass(CommentActivity.this, LoginActivity.class);
@@ -338,7 +338,7 @@ public class CommentActivity extends BaseActivity implements View.OnClickListene
                 commentContent.setText("");
                 hideSoftInput();
 
-                //将该评论与强语绑定到一起
+                //
                 BmobRelation relation = new BmobRelation();
                 relation.add(comment);
                 post.setRelation(relation);
@@ -347,7 +347,7 @@ public class CommentActivity extends BaseActivity implements View.OnClickListene
                     @Override
                     public void onSuccess() {
                         // TODO Auto-generated method stub
-                        //LogUtils.i(TAG, "更新评论成功");
+                        //LogUtils.i(TAG, "Update comment sucessfully");
 //						fetchData();
                     }
 
@@ -456,7 +456,7 @@ public class CommentActivity extends BaseActivity implements View.OnClickListene
                 });
             }
         } else {
-            //前往登录注册界面
+            //
             ToastUtils.showToast(CommentActivity.this, "Login before saving", Toast.LENGTH_SHORT);
             Intent intent = new Intent(CommentActivity.this, LoginActivity.class);
             this.startActivity(intent);
@@ -548,7 +548,7 @@ public class CommentActivity extends BaseActivity implements View.OnClickListene
                     setListViewHeightBasedOnChildren(commentList);
                     LogUtils.i(TAG, "refresh");
                 } else {
-                    //ToastUtils.showToast(mContext, "暂无更多评论", Toast.LENGTH_SHORT);
+                    //ToastUtils.showToast(mContext, "No more comment", Toast.LENGTH_SHORT);
                     loadMore.setText("No more comment");
                     pageNum--;
                 }
@@ -596,8 +596,8 @@ public class CommentActivity extends BaseActivity implements View.OnClickListene
     }
 
     /**
-     * 动态设置listview的高度
-     * item 总布局必须是linearLayout
+     * 
+     * 
      *
      * @param listView
      */
@@ -627,7 +627,7 @@ public class CommentActivity extends BaseActivity implements View.OnClickListene
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case Constant.PUBLISH_COMMENT:
-                    //登录完成
+                    //
                     commentCommit.performClick();
                     break;
                 case Constant.SAVE_FAVOURITE:
