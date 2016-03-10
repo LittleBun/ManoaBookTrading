@@ -70,7 +70,7 @@ public class MainActivity extends BaseActivity {
     private static final int ABOUT_FRAGMENT = 4;
 
     private static final int REQUEST_LOGIN = 0;
-    private int drawerPosition = POSTS_LIST_FRAGMENT;//默认显示首页
+    private int drawerPosition = POSTS_LIST_FRAGMENT;//
 
     private Fragment fragment = null;
     private PostsListFragment postsListFragment;
@@ -233,7 +233,7 @@ public class MainActivity extends BaseActivity {
     }
 
     /**
-     * 双击back键退出
+     * 
      */
     @Override
     public void onBackPressed() {
@@ -257,7 +257,7 @@ public class MainActivity extends BaseActivity {
     }
 
     /**
-     * 判断用户是否登录
+     * 
      *
      * @return
      */
