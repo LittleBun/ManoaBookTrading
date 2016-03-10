@@ -56,8 +56,8 @@ public class DBHelper extends SQLiteOpenHelper{
 	
 	
     /**
-     * 获取数据库操作对象
-     * @param isWrite 是否可写
+     * 
+     * @param isWrite
      * @return
      */
     public synchronized SQLiteDatabase getDatabase(boolean isWrite) {
@@ -67,7 +67,7 @@ public class DBHelper extends SQLiteOpenHelper{
                 try {
                     mDb=getWritableDatabase();
                 } catch(Exception e) {
-                    // 当数据库不可写时
+                    // 
                     mDb=getReadableDatabase();
                     return mDb;
                 }
@@ -76,7 +76,7 @@ public class DBHelper extends SQLiteOpenHelper{
             }
         }
         // } catch (SQLiteException e) {
-        // // 当数据库不可写时
+        // // 
         // mDb = getReadableDatabase();
         // }
         return mDb;
