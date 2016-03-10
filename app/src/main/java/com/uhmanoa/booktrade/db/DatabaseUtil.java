@@ -19,7 +19,7 @@ public class DatabaseUtil {
     private static DatabaseUtil instance;
 
     /**
-     * 数据库帮助类 *
+     **
      */
     private DBHelper dbHelper;
 
