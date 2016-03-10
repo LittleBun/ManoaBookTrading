@@ -96,7 +96,7 @@ public class NewPostActivity extends BaseActivity implements View.OnClickListene
         switch (v.getId()) {
             case R.id.open_layout:
                 Intent intent = new Intent(Intent.ACTION_PICK);//or ACTION_PICK
-                intent.setType("image/*");//相片类型
+                intent.setType("image/*");//
                 startActivityForResult(Intent.createChooser(intent,
                         "Select Picture"), REQUEST_CODE_ALBUM);
                 break;
@@ -211,7 +211,7 @@ public class NewPostActivity extends BaseActivity implements View.OnClickListene
     }
 
     /*
-        * 发表带图片
+        * 
         */
     private void publish(final String commitContent) {
 
@@ -241,7 +241,7 @@ public class NewPostActivity extends BaseActivity implements View.OnClickListene
 
     }
 
-    //不带图片
+    //
     private void publishWithoutFigure(final String commitContent,
                                       final BmobFile figureFile) {
         User user = BmobUser.getCurrentUser(mContext, User.class);
