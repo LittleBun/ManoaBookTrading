@@ -100,7 +100,7 @@ public class CardsAdapter extends BaseAdapter {
             LogUtils.i(TAG, "USER avatar IS NULL");
         }
 
-        //加载头像
+        //
         if (user.getAvatar() != null) {
             String avatarUrl = user.getAvatar().getFileUrl(context);
             int defaultAvatar = user.getSex().equals(Constant.SEX_MALE) ? R.drawable.avatar_default_m : R.drawable.avatar_default_f;
@@ -113,7 +113,7 @@ public class CardsAdapter extends BaseAdapter {
                     .into(viewHolder.userAvatar);
         }
 
-        //监听点击头像，跳转到个人主页
+        //
         viewHolder.userAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,14 +130,14 @@ public class CardsAdapter extends BaseAdapter {
             }
         });
 
-        //加载用户名
+        //
         viewHolder.userName.setText(user.getUsername());
-        //加载时间戳
+        //
         viewHolder.timeStamp.setText(post.getCreatedAt());
-        //加载帖子标题
+        //
         viewHolder.title.setText(post.getContent());
 
-        //加载图书图片
+        //
         if (post.getContentfigureurl() == null) {
             viewHolder.postPics.setVisibility(View.GONE);
         } else {
@@ -158,13 +158,13 @@ public class CardsAdapter extends BaseAdapter {
             });
         }
 
-        //加载收藏图标
+        //
         if (post.getMyFav()) {
             viewHolder.favorite.setImageResource(R.drawable.ic_favorite);
         } else {
             viewHolder.favorite.setImageResource(R.drawable.ic_favorite_outline);
         }
-        //监听收藏
+        //
         viewHolder.favoriteLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -173,7 +173,7 @@ public class CardsAdapter extends BaseAdapter {
         });
 
 
-        //加载点赞
+        //
         viewHolder.likeCount.setText(post.getLove() + "");
         if (post.getMyLove()) {
             viewHolder.thumb.setImageResource(R.drawable.ic_post_my_like);
@@ -183,7 +183,7 @@ public class CardsAdapter extends BaseAdapter {
             viewHolder.likeCount.setTextColor(R.color.button_material_dark);
         }
 
-        //监听点赞
+        //
         viewHolder.likePost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -247,7 +247,7 @@ public class CardsAdapter extends BaseAdapter {
         });
 
 
-        //监听分享
+        //
         viewHolder.sharePost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -255,9 +255,9 @@ public class CardsAdapter extends BaseAdapter {
             }
         });
 
-        //加载评论数量
+        //
         viewHolder.commentCount.setText(post.getComment() + "");
-        //监听点击评论
+        //
         viewHolder.commentPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -276,7 +276,7 @@ public class CardsAdapter extends BaseAdapter {
     }
 
     /**
-     * 判断用户是否登录
+     * 
      *
      * @return
      */
@@ -308,7 +308,7 @@ public class CardsAdapter extends BaseAdapter {
     }
 
 
-    //点击收藏
+    //
     private void onClickFav(View v, final Post post) {
         // TODO Auto-generated method stub
         final User user = BmobUser.getCurrentUser(context, User.class);
@@ -390,7 +390,7 @@ public class CardsAdapter extends BaseAdapter {
                 });
             }
         } else {
-            //前往登录注册界面
+            //
             ToastUtils.showToast(context, "Please Login First", Toast.LENGTH_SHORT);
             Intent intent = new Intent(context, LoginActivity.class);
             context.startActivity(intent);
