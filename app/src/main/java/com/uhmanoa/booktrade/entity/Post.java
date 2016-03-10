@@ -18,8 +18,8 @@ public class Post extends BmobObject implements Serializable{
 	private int share;
 	private int comment;
 	private boolean isPass;
-	private boolean myFav;//收藏
-	private boolean myLove;//赞
+	private boolean myFav;//
+	private boolean myLove;//
 	private BmobRelation relation;
 
 	public BmobRelation getRelation() {
